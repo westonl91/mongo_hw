@@ -11,12 +11,23 @@ $.getJSON("/articles", function(data) {
         "<br />" +
         data[i].link +
         "<br />" +
-        "<button id=" +
+        "<button class='save' value='" +
         data[i]._id +
-        "_save>Save Post</button>" +
+        "'>Save Post</button>" +
         "</p>"
     );
   }
+}).then(function(data) {
+  console.log(data);
+  $(document).on("click", ".save", function() {
+    $(this).text("Saved! Remove?");
+    $(this).toggleClass("unsave");
+  });
+
+  $(document).on("click", ".unsave", function() {
+    $(this).text("Save Post");
+    $(this).toggleClass("save");
+  });
 });
 
 // Whenever someone clicks a p tag
