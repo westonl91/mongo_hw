@@ -10,6 +10,10 @@ $.getJSON("/articles", function(data) {
         data[i].title +
         "<br />" +
         data[i].link +
+        "<br />" +
+        "<button id=" +
+        data[i]._id +
+        "_save>Save Post</button>" +
         "</p>"
     );
   }
@@ -85,6 +89,7 @@ $(document).on("click", "#scrape", function() {
     method: "GET",
     url: "/scrape"
   }).then(function(data) {
+    location.reload();
     //console.log(data);
   });
 });

@@ -26,15 +26,26 @@ app.use(express.json());
 // Make public a static folder
 app.use(express.static("public"));
 
-// Connect to the Mongo DB
-mongoose.connect("mongodb://localhost/unit18Populater", {
+// If deployed, use the deployed database. Otherwise use the local mongoHeadlines database
+var MONGODB_URI =
+  process.env.MONGODB_URI || "mongodb://localhost/unit18Populater";
+
+mongoose.connect(MONGODB_URI, {
   useNewUrlParser: true
 });
+
+// // Connect to the Mongo DB
+// mongoose.connect("mongodb://localhost/unit18Populater", {
+//   useNewUrlParser: true
+// });
 
 // Routes
 
 // A GET route for scraping the echoJS website
 app.get("/scrape", function(req, res) {
+  db.Article.remove({}).then(function(data) {
+    console.log("removing old scrapings...");
+  });
   // First, we grab the body of the html with axios
   axios.get("http://www.reddit.com/r/popular").then(function(response) {
     // Then, we load that into cheerio and save it to $ for a shorthand selector
@@ -49,11 +60,7 @@ app.get("/scrape", function(req, res) {
       result.title = $(this)
         .children("h2")
         .text();
-      result.link =
-        "www.reddit.com" +
-        $(this)
-          //.children("a")
-          .attr("href");
+      result.link = "www.reddit.com" + $(this).attr("href");
 
       // Create a new Article using the `result` object built from scraping
       db.Article.create(result)
